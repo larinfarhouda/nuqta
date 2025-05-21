@@ -1,0 +1,20 @@
+export const siteConfig = {
+  name: "نقطة",
+  description: "منصة نقطة - اكتشف الفعاليات والخدمات العربية في إسطنبول",
+  url: "https://nuqta.com",
+  ogImage: "/og-image.png",
+  logo: "/nuqta_logo.png",
+  locale: "ar-SA",
+  keywords: [
+    "نقطة",
+    "خدمات",
+    "فعاليات",
+    "إسطنبول",
+    "عرب",
+    "مجتمع",
+    "خدمات عربية",
+    "فعاليات عربية",
+    "مزودي خدمات",
+    "تركيا",
+  ],
+}
