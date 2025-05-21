@@ -7,6 +7,9 @@ import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import { GoogleAnalytics } from "@/components/analytics"
+import { Suspense } from "react"
+
+
 
 const tajawal = Tajawal({
   subsets: ["arabic"],
@@ -28,15 +31,21 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl">
       <body className={tajawal.className}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+        {/* <ThemeProvider attribute="class" defaultTheme="light" enableSystem> */}
           {/* <AuthProvider> */}
             <div className="flex min-h-screen flex-col">
-              <Navbar />
+            <Suspense fallback={null}>
+  <Navbar />
+</Suspense>
+
               <main className="flex-1">{children}</main>
-              <Footer />
+              <Suspense fallback={null}>
+  <Footer />
+</Suspense>
+
             </div>
           {/* </AuthProvider> */}
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
          {/* Add Google Analytics - Replace GA_MEASUREMENT_ID with your actual ID */}
          <GoogleAnalytics gaId="G-BT5RS3V4NK" />
       </body>
