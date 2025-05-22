@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
-import { useAuth } from "@/lib/context/auth-context"
+//import { useAuth } from "@/lib/context/auth-context"
 import ImageWithFallback from "@/components/image-with-fallback"
 // import RegisterButton from "./register-button"
 
@@ -41,7 +41,7 @@ const categoryLabels: Record<string, string> = {
 }
 
 export default function EventDetails({ event }: EventDetailsProps) {
-  const { isAuthenticated } = useAuth()
+  //const { isAuthenticated } = useAuth()
   const { toast } = useToast()
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
   const [attendees, setAttendees] = useState(1)
