@@ -175,6 +175,7 @@ function HomePageSkeleton() {
           </div>
         </div>
       </section>
+      
     </>
   )
 }

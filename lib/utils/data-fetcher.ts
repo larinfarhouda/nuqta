@@ -311,3 +311,43 @@ export async function fetchBookingsForEvent(eventId: string) {
 export async function fetchBookingsForUser(userId: string) {
   // Implementación existente...
 }
+
+
+
+
+
+// احضار كل المقالات
+export async function fetchAllPosts() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/blog_posts?select=*`, {
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    },
+    cache: "no-store",
+  });
+  return res.json();
+}
+
+// احضار مقالة واحدة بالسلاق
+export async function fetchPostBySlug(slug: string) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/blog_posts?slug=eq.${slug}&select=*`, {
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    },
+    cache: "no-store",
+  });
+  const data = await res.json();
+  return data[0] || null;
+}
+
+export async function fetchAllCategories() {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/blog_posts?select=category`, {
+    headers: {
+      apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    },
+    cache: "no-store",
+  });
+  const raw = await res.json();
+  const uniqueCategories = [...new Set(raw.map((r: { category: any }) => r.category).filter(Boolean))];
+  return uniqueCategories;
+}
+

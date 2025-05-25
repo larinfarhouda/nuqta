@@ -14,6 +14,7 @@ function NavbarSkeleton() {
             <Skeleton className="h-8 w-20" />
             <Skeleton className="h-8 w-20" />
             <Skeleton className="h-8 w-20" />
+            <Skeleton className="h-8 w-20" />
           </div>
         </div>
       </div>

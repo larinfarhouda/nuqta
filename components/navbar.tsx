@@ -113,6 +113,9 @@ export function Navbar() {
             <Link href="/contact-us" className="text-gray-700 hover:text-teal-600 transition-colors">
               اتصل بنا
             </Link>
+            <Link href="/blog" className="text-gray-700 hover:text-teal-600 transition-colors">
+              المدونة
+            </Link>
           </nav>
 
           {/* Auth Buttons */}
@@ -223,6 +226,13 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 اتصل بنا
+              </Link>
+              <Link
+                href="/blog"
+                className="text-gray-700 hover:text-teal-600 transition-colors"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                المدونة
               </Link>
 
               {/* Mobile Auth Buttons */}
