@@ -18,7 +18,10 @@ interface EventPageProps {
 }
 
 export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
-  const { data: event } = await fetchEventById(params.id)
+  const id = params?.id // ✅ آمنة
+  const { data: event } = await fetchEventById(id)
+ 
+
 
   if (!event) {
     return {

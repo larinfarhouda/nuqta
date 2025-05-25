@@ -25,6 +25,13 @@ import { useToast } from "@/hooks/use-toast"
 import ImageWithFallback from "@/components/image-with-fallback"
 // import RegisterButton from "./register-button"
 
+
+import { createClient } from "@/lib/supabase/client"
+import { useEffect } from "react"
+
+
+
+
 interface EventDetailsProps {
   event: any // Using any for simplicity, but should be properly typed
 }
@@ -41,6 +48,23 @@ const categoryLabels: Record<string, string> = {
 }
 
 export default function EventDetails({ event }: EventDetailsProps) {
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentUrl(window.location.href)
+    }
+  }, [])
+
+
+  const [currentUrl, setCurrentUrl] = useState("")
+useEffect(() => {
+  if (typeof window !== "undefined") {
+    setCurrentUrl(window.location.href)
+  }
+}, [])
+
+
+
   //const { isAuthenticated } = useAuth()
   const { toast } = useToast()
   const [isShareDialogOpen, setIsShareDialogOpen] = useState(false)
@@ -120,6 +144,66 @@ export default function EventDetails({ event }: EventDetailsProps) {
     })
     setIsShareDialogOpen(false)
   }
+
+
+
+
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    age: "",
+    gender: "",
+    countryCode: "90"
+  })
+  const [formErrors, setFormErrors] = useState({
+    name: false,
+    phone: false,
+    email: false,
+    age: false,
+    gender: false,
+  })
+  
+  const supabase = createClient()
+  
+const handleSubmit = async () => {
+  const age = parseInt(formData.age)
+  const fullPhone = `${formData.countryCode}${formData.phone.replace(/[^0-9]/g, "")}`
+
+  const newErrors = {
+    name: !formData.name,
+    phone: !formData.phone,
+    email: !formData.email,
+    age: !age || age <= 0,
+    gender: !formData.gender,
+  }
+  setFormErrors(newErrors)
+
+  const hasError = Object.values(newErrors).some(Boolean)
+  if (hasError) return
+
+  const { error } = await supabase.from("users").insert([
+    {
+      name: formData.name,
+      phone: fullPhone,
+      email: formData.email,
+      age: age,
+      gender: formData.gender,
+      attendees: attendees,
+      event_id: event.id,
+      interest_category: event.category,
+    },
+  ])
+
+  if (!error) {
+    const rawPhone = event.demo_profiles?.phone?.replace(/[^0-9]/g, "") || ""
+    const message = `مرحباً، لقيت إعلان فعاليتكم على منصة نقطة وحابب أحجز لعدد ${attendees} شخص\nالاسم: ${formData.name}\nرقم الجوال: ${fullPhone}\nالبريد الإلكتروني: ${formData.email}\nالعمر: ${formData.age}\nالجنس: ${formData.gender}`
+    window.open(`https://wa.me/${rawPhone.startsWith("90") ? rawPhone : `90${rawPhone}`}?text=${encodeURIComponent(message)}`)
+    setIsDialogOpen(false)
+  }
+}
 
 
 
@@ -247,7 +331,7 @@ export default function EventDetails({ event }: EventDetailsProps) {
                       <DialogDescription>انسخ الرابط أدناه لمشاركة هذه الفعالية</DialogDescription>
                     </DialogHeader>
                     <div className="flex items-center space-x-2 space-x-reverse">
-                      <Input value={window.location.href} readOnly />
+                    <Input value={currentUrl} readOnly />
                       <Button onClick={copyToClipboard}>نسخ</Button>
                     </div>
                     <DialogFooter className="sm:justify-start">
@@ -337,7 +421,7 @@ export default function EventDetails({ event }: EventDetailsProps) {
               /> */}
 
 
-{event.demo_profiles?.phone ? (
+{/* {event.demo_profiles?.phone ? (
   <a
     href={`https://wa.me/${event.demo_profiles.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
       `مرحباً، لقيت إعلان فعاليتكم على منصة نقطة وحابب أحجز لعدد ${attendees} شخص في فعالية ${event.title}`
@@ -351,7 +435,108 @@ export default function EventDetails({ event }: EventDetailsProps) {
   </a>
 ) : (
   <p className="text-sm text-red-500 mt-2">لا يوجد رقم تواصل لطلب التسجيل</p>
-)}
+)} */}
+
+<>
+  <Button className="w-full bg-teal-600 hover:bg-teal-700" onClick={() => setIsDialogOpen(true)}>
+    التسجيل في الفعالية
+  </Button>
+
+  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>التسجيل</DialogTitle>
+      </DialogHeader>
+      <div className="space-y-4">
+        <div>
+          <Input
+            placeholder="الاسم الكامل"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+          {formErrors.name && <p className="text-sm text-red-500 mt-1">الاسم مطلوب</p>}
+        </div>
+
+        <div className="flex gap-2">
+          {/* <select
+            required
+            className="w-24 border rounded px-2 py-2"
+            value={formData.countryCode}
+            onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
+          >
+            <option value="90">+90</option>
+            <option value="966">+966</option>
+            <option value="971">+971</option>
+          </select> */}
+          <div className="flex-1">
+            <Input
+              placeholder="رقم الجوال"
+              value={formData.phone}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            />
+            {formErrors.phone && <p className="text-sm text-red-500 mt-1">رقم الجوال مطلوب</p>}
+          </div>
+        </div>
+
+        <div>
+          <Input
+            type="email"
+            placeholder="البريد الإلكتروني"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          />
+          {formErrors.email && <p className="text-sm text-red-500 mt-1">البريد الإلكتروني مطلوب</p>}
+        </div>
+
+        <div className="relative">
+          <Input
+            type="number"
+            placeholder="العمر"
+            value={formData.age}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d*$/.test(value) && parseInt(value) >= 1) {
+                setFormData({ ...formData, age: value });
+              }
+            }}
+            className="pr-10 pl-10"
+          />
+          {/* <button
+            type="button"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500"
+            onClick={() => setFormData({ ...formData, age: `${parseInt(formData.age || "0") + 1}` })}
+          >
+            +
+          </button> */}
+          {/* <button
+            type="button"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 text-lg text-gray-500"
+            onClick={() => setFormData({ ...formData, age: `${Math.max(1, parseInt(formData.age || "1") - 1)}` })}
+          >
+            -
+          </button> */}
+          {formErrors.age && <p className="text-sm text-red-500 mt-1">يرجى إدخال عمر صحيح</p>}
+        </div>
+
+        <div>
+          <select
+            className="w-full border rounded px-3 py-2"
+            value={formData.gender}
+            onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+          >
+            <option value="">اختر الجنس</option>
+            <option value="ذكر">ذكر</option>
+            <option value="أنثى">أنثى</option>
+          </select>
+          {formErrors.gender && <p className="text-sm text-red-500 mt-1">يرجى اختيار الجنس</p>}
+        </div>
+      </div>
+      <DialogFooter>
+        <Button onClick={handleSubmit} className="w-full bg-teal-600 hover:bg-teal-700 mt-4">إرسال</Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+</>
 
 
 
